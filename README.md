@@ -36,7 +36,7 @@ chmod +x pull-k8s-image.sh
 
 Uses/如何拉取新镜像
 -------
-[创建issues(直接套用模板即可，别自己瞎改labels)](https://github.com/anjia0532/gcr.io_mirror/issues/new?assignees=&labels=porter&template=porter.md&title=%5BPORTER%5D) ,将自动触发 github actions 进行拉取转推到docker hub
+[创建issues(直接套用模板即可，别自己瞎改labels)](https://github.com/peterydd/gcr.io_mirror/issues/new?assignees=&labels=porter&template=porter.md&title=%5BPORTER%5D) ,将自动触发 github actions 进行拉取转推到docker hub
 
 **注意：**
 
@@ -48,7 +48,7 @@ Uses/如何拉取新镜像
 
 issues的内容无所谓，可以为空
 
-可以参考 [已搬运镜像集锦](https://github.com/anjia0532/gcr.io_mirror/issues?q=is%3Aissue+label%3Aporter+)
+可以参考 [已搬运镜像集锦](https://github.com/peterydd/gcr.io_mirror/issues?q=is%3Aissue+label%3Aporter+)
 
 **注意:**
 
@@ -119,8 +119,8 @@ cat batch-pull-k8s-image.sh
 #!/bin/sh
 
 # 替换 gcr.io/google-containers/federation-controller-manager-arm64:v1.3.1-beta.1 为真实 image
-# 将会把 gcr.io/google-containers/federation-controller-manager-arm64:v1.3.1-beta.1 转换为 anjia0532/google-containers.federation-controller-manager-arm64:v1.3.1-beta.1 并且会拉取他
-# k8s.gcr.io/{image}/{tag} <==> gcr.io/google-containers/{image}/{tag} <==> anjia0532/google-containers.{image}/{tag}
+# 将会把 gcr.io/google-containers/federation-controller-manager-arm64:v1.3.1-beta.1 转换为 peterydd/google-containers.federation-controller-manager-arm64:v1.3.1-beta.1 并且会拉取他
+# k8s.gcr.io/{image}/{tag} <==> gcr.io/google-containers/{image}/{tag} <==> peterydd/google-containers.{image}/{tag}
 
 images=$(cat img.txt)
 
@@ -133,16 +133,16 @@ images=$(cat img.txt)
 #)
 
 eval $(echo ${images}|
-        sed 's/k8s\.gcr\.io/anjia0532\/google-containers/g;s/gcr\.io/anjia0532/g;s/\//\./g;s/ /\n/g;s/anjia0532\./anjia0532\//g' |
+        sed 's/k8s\.gcr\.io/peterydd\/google-containers/g;s/gcr\.io/anjia0532/g;s/\//\./g;s/ /\n/g;s/peterydd\./peterydd\//g' |
         uniq |
         awk '{print "sudo docker pull "$1";"}'
        )
 
-# 下面这段代码将把本地所有的 anjia0532 镜像 (例如 anjia0532/google-containers.federation-controller-manager-arm64:v1.3.1-beta.1 )
+# 下面这段代码将把本地所有的 peterydd 镜像 (例如 peterydd/google-containers.federation-controller-manager-arm64:v1.3.1-beta.1 )
 # 转换成 grc.io 或者 k8s.gcr.io 的镜像 (例如 gcr.io/google-containers/federation-controller-manager-arm64:v1.3.1-beta.1)
-# k8s.gcr.io/{image}/{tag} <==> gcr.io/google-containers/{image}/{tag} <==> anjia0532/google-containers.{image}/{tag}
+# k8s.gcr.io/{image}/{tag} <==> gcr.io/google-containers/{image}/{tag} <==> peterydd/google-containers.{image}/{tag}
 
-for img in $(sudo docker images --format "{{.Repository}}:{{.Tag}}"| grep "anjia0532"); do
+for img in $(sudo docker images --format "{{.Repository}}:{{.Tag}}"| grep "peterydd"); do
   n=$(echo ${img}| awk -F'[/.:]' '{printf "gcr.io/%s",$2}')
   image=$(echo ${img}| awk -F'[/.:]' '{printf "/%s",$3}')
   tag=$(echo ${img}| awk -F'[:]' '{printf ":%s",$2}')
@@ -163,7 +163,7 @@ cat pull-k8s-images.sh
 
 k8s_img=$1
 mirror_img=$(echo ${k8s_img}|
-        sed 's/k8s\.gcr\.io/anjia0532\/google-containers/g;s/gcr\.io/anjia0532/g;s/\//\./g;s/ /\n/g;s/anjia0532\./anjia0532\//g' |
+        sed 's/k8s\.gcr\.io/peterydd\/google-containers/g;s/gcr\.io/peterydd/g;s/\//\./g;s/ /\n/g;s/peterydd\./peterydd\//g' |
         uniq)
 
 sudo docker pull ${mirror_img}
